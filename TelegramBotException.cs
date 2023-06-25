@@ -1,4 +1,4 @@
-﻿namespace FastTelegramBot.DataTypes;
+﻿namespace FastTelegramBot;
 public class TelegramBotException : Exception
 {
     public int ErrorCode { get; }
