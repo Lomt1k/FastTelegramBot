@@ -42,10 +42,16 @@ public class TelegtamBotClient
                 jsonWriter.WriteValue(text);
                 jsonWriter.WritePropertyName("parse_mode");
                 jsonWriter.WriteValue(parseMode.ToString());
-                jsonWriter.WritePropertyName("disable_web_page_preview");
-                jsonWriter.WriteValue(disableWebPagePreview);
-                jsonWriter.WritePropertyName("disable_notification");
-                jsonWriter.WriteValue(disableNotification);
+                if (disableWebPagePreview)
+                {
+                    jsonWriter.WritePropertyName("disable_web_page_preview");
+                    jsonWriter.WriteValue(disableWebPagePreview);
+                }
+                if (disableNotification)
+                {
+                    jsonWriter.WritePropertyName("disable_notification");
+                    jsonWriter.WriteValue(disableNotification);
+                }
                 if (keyboardMarkup is not null)
                 {
                     keyboardMarkup.WriteToJson(jsonWriter);
