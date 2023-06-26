@@ -24,21 +24,18 @@ public class ReplyKeyboardMarkup : IKeyboardMarkup
         writer.WriteStartObject();
 
         // keyboard
-        if (Keyboard.Count > 0)
+        writer.WritePropertyName("keyboard");
+        writer.WriteStartArray();
+        foreach (var buttonsList in Keyboard)
         {
-            writer.WritePropertyName("keyboard");
             writer.WriteStartArray();
-            foreach (var buttonsList in Keyboard)
+            foreach (var button in buttonsList)
             {
-                writer.WriteStartArray();
-                foreach (var button in buttonsList)
-                {
-                    button.WriteToJson(writer);
-                }
-                writer.WriteEndArray();
+                button.WriteToJson(writer);
             }
             writer.WriteEndArray();
         }
+        writer.WriteEndArray();
 
         // other fields
         if (IsPersistent)

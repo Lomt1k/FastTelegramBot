@@ -22,8 +22,7 @@ public class TelegtamBotClient
 
     public async Task<User> GetMeAsync(CancellationToken cancellationToken = default)
     {
-        var request = new HttpRequestMessage(HttpMethod.Get, _baseRequestUrl + "getMe");
-        var httpResponse = await _httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await _httpClient.GetAsync(_baseRequestUrl + "getMe", cancellationToken).ConfigureAwait(false);
         var jsonResponse = await httpResponse.Content.ReadAsStringAsync(cancellationToken).ConfigureAwait(false);
         var user = JsonHelper.ReadResult<User>(jsonResponse);
         return user;
