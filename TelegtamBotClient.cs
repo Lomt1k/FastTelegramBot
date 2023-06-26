@@ -1,4 +1,6 @@
 ﻿using FastTelegramBot.DataTypes;
+using FastTelegramBot.DataTypes.Messages;
+using FastTelegramBot.DataTypes.Messages.Keyboards;
 using Newtonsoft.Json;
 using System.Text;
 
@@ -27,7 +29,7 @@ public class TelegtamBotClient
         return user;
     }
 
-    public async Task<MessageId> SendMessageAsync(long chatId, string text, ParseMode parseMode = ParseMode.HTML, bool disableWebPagePreview = false, bool disableNotification = false, CancellationToken cancellationToken = default)
+    public async Task<MessageId> SendMessageAsync(long chatId, string text, ParseMode parseMode = ParseMode.HTML, bool disableWebPagePreview = false, bool disableNotification = false, IKeyboardMarkup? keyboardMarkup = null, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
         using (var sw = new StringWriter(sb))
@@ -45,6 +47,10 @@ public class TelegtamBotClient
                 jsonWriter.WriteValue(disableWebPagePreview);
                 jsonWriter.WritePropertyName("disable_notification");
                 jsonWriter.WriteValue(disableNotification);
+                if (keyboardMarkup is not null)
+                {
+                    keyboardMarkup.WriteToJson(jsonWriter);
+                }
                 jsonWriter.WriteEndObject();
             }
         }

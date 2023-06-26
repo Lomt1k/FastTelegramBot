@@ -1,4 +1,4 @@
-﻿namespace FastTelegramBot.DataTypes;
+﻿namespace FastTelegramBot.DataTypes.Messages;
 public enum ParseMode : byte
 {
     HTML,
