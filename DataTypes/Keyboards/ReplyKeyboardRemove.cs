@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace FastTelegramBot.DataTypes.Messages.Keyboards;
+namespace FastTelegramBot.DataTypes.Keyboards;
 public class ReplyKeyboardRemove : IKeyboardMarkup
 {
     public void WriteToJson(JsonTextWriter writer)

@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace FastTelegramBot.DataTypes.Messages.Keyboards;
+namespace FastTelegramBot.DataTypes.Keyboards;
 public class InlineKeyboardButton : IKeyboardButton
 {
     public string Text { get; } = string.Empty;

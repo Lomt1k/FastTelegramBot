@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace FastTelegramBot.DataTypes.Messages.Keyboards;
+namespace FastTelegramBot.DataTypes.Keyboards;
 public class ReplyKeyboardMarkup : IKeyboardMarkup
 {
     public List<List<ReplyKeyboardButton>> Keyboard { get; } = new();
@@ -52,7 +52,7 @@ public class ReplyKeyboardMarkup : IKeyboardMarkup
         {
             writer.WritePropertyName("one_time_keyboard");
             writer.WriteValue(OneTimeKeyboard);
-        }        
+        }
         if (InputFieldPlaceholder is not null)
         {
             writer.WritePropertyName("input_field_placeholder");

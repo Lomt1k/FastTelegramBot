@@ -1,7 +1,7 @@
 ﻿using Newtonsoft.Json;
 
-namespace FastTelegramBot.DataTypes.Messages;
-public class MessageId : IJsonData
+namespace FastTelegramBot.DataTypes;
+public struct MessageId : IJsonData
 {
     public long Id { get; private set; }
 
