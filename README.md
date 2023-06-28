@@ -1,6 +1,6 @@
 # FastTelegramBot
 
-##How this project came about:
+## How this project came about:
 
 Initially, I started using Telegram.Bot API for my personal project. I soon noticed that json serialization and deserialization could be greatly optimized.
 
@@ -16,9 +16,9 @@ Each JSON serialization and deserialization occurs with the help of Telegram.Bot
 
 This project aims to significantly optimize the serialization and deserialization of objects, which can significantly reduce the load on RAM and CPU.
 
-##Due to what:
+## Due to what:
 1. Manual JSON serialization without using reflection, filling only the really necessary fields.
 2. Manual JSON deserialization without using reflection, with reading only really necessary fields.
 
-##Important:
+## Important:
 Implemented only those methods and functions that I needed to work on a real project. If you found this repository and are interested in it, then you can always expand this functionality if you wish.
