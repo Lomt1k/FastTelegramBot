@@ -2,11 +2,11 @@
 
 ## How this project came about:
 
-Initially, I started using Telegram.Bot API for my personal project. I soon noticed that json serialization and deserialization could be greatly optimized.
+Initially, I started using Telegram.Bot API for my personal project. I soon noticed that JSON serialization and deserialization could be greatly optimized.
 
 What the normal work of the bot looks like:
 1. Your bot receives updates from telegram servers in JSON format.
-2. You need to deserialize this JSON into an updatee object.
+2. You need to deserialize this JSON into an update object.
 3. The internal logic of your bot works, as a result of which, in most cases, you will need to send a response to the incoming update. Usually a message.
 4. You serialize your response into a JSON and send it to telegram servers.
 5. Telegram sends another JSON to your request, which contains all the information about the message you sent.
