@@ -1,11 +1,11 @@
 ﻿namespace FastTelegramBot.DataTypes;
-public readonly struct FileId
+public readonly struct FileUniqueId
 {
     public string Id { get; }
 
-    public FileId(string fileId)
+    public FileUniqueId(string fileUniqueId)
     {
-        Id = fileId;
+        Id = fileUniqueId;
     }
 
     public override string ToString()

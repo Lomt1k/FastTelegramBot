@@ -2,9 +2,9 @@
 using Newtonsoft.Json;
 
 namespace FastTelegramBot;
-public static class JsonHelper
+public static class JsonExtensions
 {
-    public static T ReadResult<T>(Stream jsonStream) where T : IJsonData, new()
+    public static T ReadResult<T>(this Stream jsonStream) where T : IJsonData, new()
     {
         using (var streamReader = new StreamReader(jsonStream))
         {
@@ -42,7 +42,7 @@ public static class JsonHelper
         }
     }
 
-    public static bool ReadOkResult(Stream jsonStream)
+    public static void EnsureOkResult(this Stream jsonStream)
     {
         using (var streamReader = new StreamReader(jsonStream))
         {
@@ -61,7 +61,7 @@ public static class JsonHelper
                                 bool isOk = jsonReader.ReadAsBoolean() ?? false;
                                 if (isOk)
                                 {
-                                    return isOk;
+                                    return;
                                 }
                                 break;
                             case "description":
@@ -74,6 +74,17 @@ public static class JsonHelper
                     }
                 }
                 throw new TelegramBotException(errorCode, description);
+            }
+        }
+    }
+
+    public static void IgnoreNextObject(this JsonTextReader reader)
+    {
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonToken.EndObject)
+            {
+                return;
             }
         }
     }

@@ -1,11 +1,26 @@
 ﻿using Newtonsoft.Json;
 
 namespace FastTelegramBot.DataTypes;
+/// <summary>
+/// This object represents a Telegram user or bot
+/// </summary>
 public class User : IJsonData
 {
+    /// <summary>
+    /// Unique identifier for this user or bot
+    /// </summary>
     public long Id { get; private set; }
+    /// <summary>
+    /// User's or bot's first name
+    /// </summary>
     public string FirstName { get; private set; } = string.Empty;
+    /// <summary>
+    /// Optional. User's or bot's last name
+    /// </summary>
     public string? LastName { get; private set; }
+    /// <summary>
+    /// 	Optional. User's or bot's username
+    /// </summary>
     public string? Username { get; private set; }
 
     public override string ToString()
