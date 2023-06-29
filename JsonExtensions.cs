@@ -78,7 +78,7 @@ public static class JsonExtensions
         }
     }
 
-    public static void IgnoreNextObject(this JsonTextReader reader)
+    public static void IgnoreCurrentObject(this JsonTextReader reader)
     {
         while (reader.Read())
         {

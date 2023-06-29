@@ -4,18 +4,17 @@ using Newtonsoft.Json;
 using System.Text;
 
 namespace FastTelegramBot;
-public class TelegtamBotClient
+public class TelegramBotClient
 {
     public const string apiUrl = "https://api.telegram.org/";
 
-    private HttpClient _httpClient = new();
-    private string _baseRequestUrl;
-
+    public HttpClient HttpClient { get; } = new();
+    public string BaseRequestUrl { get; }
     public string Token { get; }
 
-    public TelegtamBotClient(string token)
+    public TelegramBotClient(string token)
     {
-        _baseRequestUrl = $"{apiUrl}bot{token}/";
+        BaseRequestUrl = $"{apiUrl}bot{token}/";
         Token = token;
     }
 
@@ -25,7 +24,7 @@ public class TelegtamBotClient
     /// <returns>Basic information about the bot in form of a User object</returns>
     public async Task<User> GetMeAsync(CancellationToken cancellationToken = default)
     {
-        var httpResponse = await _httpClient.GetAsync(_baseRequestUrl + "getMe", cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.GetAsync(BaseRequestUrl + "getMe", cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         var user = responseStream.ReadResult<User>();
         return user;
@@ -73,7 +72,7 @@ public class TelegtamBotClient
             }
         }
         var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
-        var httpResponse = await _httpClient.PostAsync(_baseRequestUrl + "sendMessage", jsonContent, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "sendMessage", jsonContent, cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         var messageId = responseStream.ReadResult<MessageId>();
         return messageId;
@@ -118,7 +117,7 @@ public class TelegtamBotClient
             }
         }
         var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
-        var httpResponse = await _httpClient.PostAsync(_baseRequestUrl + "editMessageText", jsonContent, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "editMessageText", jsonContent, cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         responseStream.EnsureOkResult();
     }
@@ -149,7 +148,7 @@ public class TelegtamBotClient
             }
         }
         var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
-        var httpResponse = await _httpClient.PostAsync(_baseRequestUrl + "editMessageReplyMarkup", jsonContent, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "editMessageReplyMarkup", jsonContent, cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         responseStream.EnsureOkResult();
     }
@@ -205,7 +204,7 @@ public class TelegtamBotClient
             }
         }
         var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
-        var httpResponse = await _httpClient.PostAsync(_baseRequestUrl + "deleteMessage", jsonContent, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "deleteMessage", jsonContent, cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         responseStream.EnsureOkResult();
     }
@@ -240,7 +239,7 @@ public class TelegtamBotClient
             }
         }
         var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
-        var httpResponse = await _httpClient.PostAsync(_baseRequestUrl + "answerCallbackQuery", jsonContent, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "answerCallbackQuery", jsonContent, cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         responseStream.EnsureOkResult();
     }
@@ -278,7 +277,7 @@ public class TelegtamBotClient
             }
         }
         var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
-        var httpResponse = await _httpClient.PostAsync(_baseRequestUrl + "sendSticker", jsonContent, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "sendSticker", jsonContent, cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         var messageId = responseStream.ReadResult<MessageId>();
         return messageId;
@@ -303,10 +302,25 @@ public class TelegtamBotClient
             }
         }
         var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
-        var httpResponse = await _httpClient.PostAsync(_baseRequestUrl + "getStickerSet", jsonContent, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "getStickerSet", jsonContent, cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         var stickerSet = responseStream.ReadResult<StickerSet>();
         return stickerSet;
+    }
+
+    /// <summary>
+    /// Use this method to receive incoming updates using long polling
+    /// </summary>
+    /// <param name="handleUpdatesFunc">Function for handle incoming updates</param>
+    /// <param name="offset">Identifier of the first update to be returned. Must be greater by one than the highest among the identifiers of previously received updates. By default, updates starting with the earliest unconfirmed update are returned. An update is considered confirmed as soon as getUpdates is called with an offset higher than its update_id. The negative offset can be specified to retrieve updates starting from -offset update from the end of the updates queue. All previous updates will be forgotten.</param>
+    /// <param name="limit">Limits the number of updates to be retrieved. Values between 1-100 are accepted.</param>
+    /// <param name="timeout">Timeout in seconds for long polling. Defaults to 0, i.e. usual short polling. Should be positive, short polling should be used for testing purposes only.</param>
+    /// <param name="allowedUpdates">List of the update types you want your bot to receive. Specify an null or empty list to receive all update types</param>
+    /// <param name="cancellationToken">CancellationToken for cancel receiving</param>
+    /// <returns></returns>
+    public void StartPollingUpdates(Func<List<Update>, Task> handleUpdatesFunc, long offset = 0, int limit = 100, int timeout = 0, UpdateType[]? allowedUpdates = null, CancellationToken cancellationToken = default)
+    {
+        new UpdateReceiver(this, handleUpdatesFunc, offset, limit, timeout, allowedUpdates, cancellationToken);
     }
 
 

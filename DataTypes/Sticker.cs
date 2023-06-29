@@ -59,7 +59,7 @@ public class Sticker : IJsonData
             }
             if (reader.TokenType == JsonToken.StartObject)
             {
-                reader.IgnoreNextObject();
+                reader.IgnoreCurrentObject();
                 continue;
             }
             if (reader.TokenType == JsonToken.PropertyName)
