@@ -22,6 +22,9 @@ public class TelegramBotClient
     /// A simple method for testing your bot's authentication token
     /// </summary>
     /// <returns>Basic information about the bot in form of a User object</returns>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task<User> GetMeAsync(CancellationToken cancellationToken = default)
     {
         var httpResponse = await HttpClient.GetAsync(BaseRequestUrl + "getMe", cancellationToken).ConfigureAwait(false);
@@ -40,6 +43,9 @@ public class TelegramBotClient
     /// <param name="disableNotification">Sends the message silently. Users will receive a notification with no sound</param>
     /// <param name="keyboardMarkup">Object for an inline keyboard markup or reply keyboard markup</param>
     /// <returns>Id of the sent message</returns>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task<MessageId> SendMessageAsync(ChatId chatId, string text, ParseMode parseMode = ParseMode.HTML, bool disableWebPagePreview = false, bool disableNotification = false, IKeyboardMarkup? keyboardMarkup = null, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
@@ -88,6 +94,9 @@ public class TelegramBotClient
     /// <param name="disableWebPagePreview">Disables link previews for links in this message</param>
     /// <param name="disableNotification">Sends the message silently. Users will receive a notification with no sound</param>
     /// <param name="keyboardMarkup">Object for an inline keyboard markup or reply keyboard markup</param>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task EditMessageTextAsync(ChatId chatId, MessageId messageId, string text, ParseMode parseMode = ParseMode.HTML, bool disableWebPagePreview = false, InlineKeyboardMarkup? inlineKeyboardMarkup = null, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
@@ -128,6 +137,9 @@ public class TelegramBotClient
     /// <param name="chatId">Unique identifier for the target chat or username of the target channel</param>
     /// <param name="messageId">Identifier of the message to edit</param>
     /// <param name="inlineKeyboardMarkup">Object for an inline keyboard</param>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task EditInlineKeyboardAsync(ChatId chatId, MessageId messageId, InlineKeyboardMarkup? inlineKeyboardMarkup = null, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
@@ -158,6 +170,9 @@ public class TelegramBotClient
     /// </summary>
     /// <param name="chatId">Unique identifier for the target chat or username of the target channel</param>
     /// <param name="messageId">Identifier of the message</param>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task RemoveInlineKeyboardAsync(ChatId chatId, MessageId messageId, CancellationToken cancellationToken = default)
     {
         try
@@ -188,6 +203,9 @@ public class TelegramBotClient
     /// </summary>
     /// <param name="chatId">Unique identifier for the target chat or username of the target channel</param>
     /// <param name="messageId">Identifier of the message to delete</param>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task DeleteMesageAsync(ChatId chatId, MessageId messageId, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
@@ -215,6 +233,9 @@ public class TelegramBotClient
     /// <param name="callbackQueryId">Unique identifier for the query to be answered</param>
     /// <param name="text">Text of the notification. If not specified, nothing will be shown to the user, 0-200 characters</param>
     /// <param name="showAlert">If True, an alert will be shown by the client instead of a notification at the top of the chat screen</param>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task AnswerCallbackQueryAsync(string callbackQueryId, string? text = null, bool showAlert = false, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
@@ -252,6 +273,9 @@ public class TelegramBotClient
     /// <param name="disableNotification">Sends the message silently. Users will receive a notification with no sound.</param>
     /// <param name="keyboardMarkup">Object for an inline keyboard markup or reply keyboard markup</param>
     /// <returns>Id of the sent message</returns>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task<MessageId> SendStickerAsync(ChatId chatId, FileId fileId, bool disableNotification = false, IKeyboardMarkup? keyboardMarkup = null, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
@@ -288,6 +312,9 @@ public class TelegramBotClient
     /// </summary>
     /// <param name="name">Name of the sticker set</param>
     /// <returns>StickerSet object</returns>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
     public async Task<StickerSet> GetStickerSetAsync(string name, CancellationToken cancellationToken = default)
     {
         var sb = new StringBuilder();
@@ -320,7 +347,7 @@ public class TelegramBotClient
     /// <returns></returns>
     public void StartPollingUpdates(Func<List<Update>, Task> handleUpdatesFunc, long offset = 0, int limit = 100, int timeout = 0, UpdateType[]? allowedUpdates = null, CancellationToken cancellationToken = default)
     {
-        new UpdateReceiver(this, handleUpdatesFunc, offset, limit, timeout, allowedUpdates, cancellationToken);
+        _ = new UpdateReceiver(this, handleUpdatesFunc, offset, limit, timeout, allowedUpdates, cancellationToken);
     }
 
 

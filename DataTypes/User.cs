@@ -55,6 +55,10 @@ public class User : IJsonData
                     case "username":
                         Username = reader.ReadAsString();
                         break;
+
+                    default:
+                        reader.Skip();
+                        break;
                 }
             }
         }

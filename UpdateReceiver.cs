@@ -31,42 +31,49 @@ internal class UpdateReceiver
     {
         while (!_cancellationToken.IsCancellationRequested)
         {
-            var sb = new StringBuilder();
-            using (var sw = new StringWriter(sb))
+            try
             {
-                using (var jsonWriter = new JsonTextWriter(sw))
+                var sb = new StringBuilder();
+                using (var sw = new StringWriter(sb))
                 {
-                    jsonWriter.WriteStartObject();
-                    jsonWriter.WritePropertyName("offset");
-                    jsonWriter.WriteValue(_offset);
-                    jsonWriter.WritePropertyName("limit");
-                    jsonWriter.WriteValue(_limit);
-                    jsonWriter.WritePropertyName("timeout");
-                    jsonWriter.WriteValue(_timeout);
-                    if (_allowedUpdates is not null)
+                    using (var jsonWriter = new JsonTextWriter(sw))
                     {
-                        jsonWriter.WritePropertyName("allowed_updates");
-                        jsonWriter.WriteStartArray();
-                        foreach (var updateType in _allowedUpdates)
+                        jsonWriter.WriteStartObject();
+                        jsonWriter.WritePropertyName("offset");
+                        jsonWriter.WriteValue(_offset);
+                        jsonWriter.WritePropertyName("limit");
+                        jsonWriter.WriteValue(_limit);
+                        jsonWriter.WritePropertyName("timeout");
+                        jsonWriter.WriteValue(_timeout);
+                        if (_allowedUpdates is not null)
                         {
-                            jsonWriter.WriteValue(updateType.ToJsonValue());
+                            jsonWriter.WritePropertyName("allowed_updates");
+                            jsonWriter.WriteStartArray();
+                            foreach (var updateType in _allowedUpdates)
+                            {
+                                jsonWriter.WriteValue(updateType.ToJsonValue());
+                            }
+                            jsonWriter.WriteEndArray();
                         }
-                        jsonWriter.WriteEndArray();
+                        jsonWriter.WriteEndObject();
                     }
-                    jsonWriter.WriteEndObject();
+                }
+                var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+                var httpResponse = await _botClient.HttpClient.PostAsync(_botClient.BaseRequestUrl + "getUpdates", jsonContent, _cancellationToken).ConfigureAwait(false);
+                var responseStream = await httpResponse.Content.ReadAsStreamAsync(_cancellationToken).ConfigureAwait(false);
+
+                using (var incomingUpdates = responseStream.ReadResult<IncomingUpdates>())
+                {
+                    if (incomingUpdates.Updates.Count > 0)
+                    {
+                        await _handleUpdatesFunc(incomingUpdates.Updates).ConfigureAwait(false);
+                        _offset = incomingUpdates.LastUpdateId + 1;
+                    }
                 }
             }
-            var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
-            var httpResponse = await _botClient.HttpClient.PostAsync(_botClient.BaseRequestUrl + "getUpdates", jsonContent, _cancellationToken).ConfigureAwait(false);
-            var responseStream = await httpResponse.Content.ReadAsStreamAsync(_cancellationToken).ConfigureAwait(false);
-
-            using (var incomingUpdates = responseStream.ReadResult<IncomingUpdates>())
+            catch (Exception)
             {
-                if (incomingUpdates.Updates.Count > 0)
-                {
-                    await _handleUpdatesFunc(incomingUpdates.Updates).ConfigureAwait(false);
-                    _offset = incomingUpdates.LastUpdateId + 1;
-                }
+                continue;
             }
         }
     }

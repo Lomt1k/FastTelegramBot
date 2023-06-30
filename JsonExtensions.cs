@@ -4,6 +4,12 @@ using Newtonsoft.Json;
 namespace FastTelegramBot;
 public static class JsonExtensions
 {
+    /// <summary>
+    /// Use to read object from telegram json response
+    /// </summary>
+    /// <typeparam name="T">IJsonData object type</typeparam>
+    /// <param name="jsonStream">http response content stream</param>
+    /// <exception cref="TelegramBotException"/>
     public static T ReadResult<T>(this Stream jsonStream) where T : IJsonData, new()
     {
         using (var streamReader = new StreamReader(jsonStream))
@@ -42,6 +48,11 @@ public static class JsonExtensions
         }
     }
 
+    /// <summary>
+    /// Use to ensure OK result in telegram json response (or throw exception)
+    /// </summary>
+    /// <param name="jsonStream">http response content stream</param>
+    /// <exception cref="TelegramBotException"/>
     public static void EnsureOkResult(this Stream jsonStream)
     {
         using (var streamReader = new StreamReader(jsonStream))
@@ -74,17 +85,6 @@ public static class JsonExtensions
                     }
                 }
                 throw new TelegramBotException(errorCode, description);
-            }
-        }
-    }
-
-    public static void IgnoreCurrentObject(this JsonTextReader reader)
-    {
-        while (reader.Read())
-        {
-            if (reader.TokenType == JsonToken.EndObject)
-            {
-                return;
             }
         }
     }

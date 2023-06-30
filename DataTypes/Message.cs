@@ -43,11 +43,7 @@ public class Message : IJsonData
                         break;
 
                     default:
-                        reader.Read();
-                        if (reader.TokenType == JsonToken.StartObject)
-                        {
-                            reader.IgnoreCurrentObject();
-                        }
+                        reader.Skip();
                         break;
                 }
             }

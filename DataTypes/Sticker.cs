@@ -57,11 +57,6 @@ public class Sticker : IJsonData
             {
                 return;
             }
-            if (reader.TokenType == JsonToken.StartObject)
-            {
-                reader.IgnoreCurrentObject();
-                continue;
-            }
             if (reader.TokenType == JsonToken.PropertyName)
             {
                 var key = reader.Value.ToString();
@@ -97,6 +92,10 @@ public class Sticker : IJsonData
                         break;
                     case "file_size":
                         FileSize = reader.ReadAsInt32();
+                        break;
+
+                    default:
+                        reader.Skip();
                         break;
                 }
             }
