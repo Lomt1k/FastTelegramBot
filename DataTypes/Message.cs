@@ -3,13 +3,13 @@
 namespace FastTelegramBot.DataTypes;
 public class Message : IJsonData
 {
-    public int Id { get; set; }
-    public User From { get; set; } = new();
-    public DateTime Date { get; set; }
-    public string? Text { get; set; } = string.Empty;
-    public Document? Document { get; set; }
-
     private readonly DateTime _startUtcTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
+
+    public int Id { get; private set; }
+    public User From { get; private set; } = new();
+    public DateTime Date { get; private set; }
+    public string? Text { get; private set; } = string.Empty;
+    public Document? Document { get; private set; }   
 
     public void ReadFromJson(JsonTextReader reader)
     {
