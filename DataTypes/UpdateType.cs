@@ -1,5 +1,4 @@
-﻿
-namespace FastTelegramBot.DataTypes;
+﻿namespace FastTelegramBot.DataTypes;
 public enum UpdateType
 {
     Unknown = 0,

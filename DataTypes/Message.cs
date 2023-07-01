@@ -9,7 +9,8 @@ public class Message : IJsonData
     public User From { get; private set; } = new();
     public DateTime Date { get; private set; }
     public string? Text { get; private set; } = string.Empty;
-    public Document? Document { get; private set; }   
+    public Document? Document { get; private set; }
+    public Sticker? Sticker { get; private set; }
 
     public void ReadFromJson(JsonTextReader reader)
     {
@@ -40,6 +41,10 @@ public class Message : IJsonData
                     case "document":
                         Document = new Document();
                         Document.ReadFromJson(reader);
+                        break;
+                    case "sticker":
+                        Sticker = new Sticker();
+                        Sticker.ReadFromJson(reader);
                         break;
 
                     default:

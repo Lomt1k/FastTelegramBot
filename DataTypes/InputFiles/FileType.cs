@@ -23,8 +23,8 @@ public enum FileType
 
 public static class FileTypeExtensions
 {
-    public static string ToJsonValue(this UpdateType updateType)
+    public static string ToJsonValue(this FileType fileType)
     {
-        return updateType.ToString().ToLowerInvariant();
+        return fileType.ToString().ToLowerInvariant();
     }
 }
