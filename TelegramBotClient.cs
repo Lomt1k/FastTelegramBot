@@ -398,5 +398,55 @@ public class TelegramBotClient
         return messageId;
     }
 
+    /// <summary>
+    /// Use this method to get basic information about a file and prepare it for downloading. For the moment, bots can download files of up to 20MB in size.
+    /// </summary>
+    /// <param name="fileId">File identifier to get information about</param>
+    /// <returns> File object</returns>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
+    public async Task<DataTypes.File> GetFileAsync(FileId fileId, CancellationToken cancellationToken = default)
+    {
+        var sb = new StringBuilder();
+        using (var sw = new StringWriter(sb))
+        {
+            using (var jsonWriter = new JsonTextWriter(sw))
+            {
+                jsonWriter.WriteStartObject();
+                jsonWriter.WritePropertyName("file_id");
+                jsonWriter.WriteValue(fileId.ToString());
+                jsonWriter.WriteEndObject();
+            }
+        }
+        var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "getFile", jsonContent, cancellationToken).ConfigureAwait(false);
+        var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var file = responseStream.ReadResult<DataTypes.File>();
+        return file;
+    }
+
+    /// <summary>
+    /// Use this method to download file from telegram servers
+    /// </summary>
+    /// <param name="filePath">File Path</param>
+    /// <param name="destination">Destination stream</param>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
+    public async Task DownloadFileAsync(string filePath, Stream destination, CancellationToken cancellationToken = default)
+    {
+        var httpResponse = await HttpClient.GetAsync(BaseRequestUrl + filePath, cancellationToken).ConfigureAwait(false);
+        if (httpResponse.IsSuccessStatusCode)
+        {
+            await httpResponse.Content.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
+        var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        // exception will be throwed
+        responseStream.EnsureOkResult();
+    }
+
 
 }
