@@ -18,6 +18,12 @@ public class ReplyKeyboardMarkup : IKeyboardMarkup
         InputFieldPlaceholder = inputFieldPlaceholder;
     }
 
+    public ReplyKeyboardMarkup(List<ReplyKeyboardButton> keyboard, bool isPersistent = false, bool resizeKeyboard = false, bool oneTimeKeyboard = false, string? inputFieldPlaceholder = null)
+        : this(new List<List<ReplyKeyboardButton>> { keyboard }, isPersistent, resizeKeyboard, oneTimeKeyboard, inputFieldPlaceholder) { }
+
+    public ReplyKeyboardMarkup(IEnumerable<ReplyKeyboardButton> keyboard, bool isPersistent = false, bool resizeKeyboard = false, bool oneTimeKeyboard = false, string? inputFieldPlaceholder = null)
+        : this(new List<List<ReplyKeyboardButton>> { keyboard.ToList() }, isPersistent, resizeKeyboard, oneTimeKeyboard, inputFieldPlaceholder) { }
+
     public ReplyKeyboardMarkup(params string[] buttons)
     {
         var buttonsList = new List<ReplyKeyboardButton>();
@@ -26,7 +32,7 @@ public class ReplyKeyboardMarkup : IKeyboardMarkup
             buttonsList.Add(new ReplyKeyboardButton(button));
         }
         Keyboard = new List<List<ReplyKeyboardButton>> { buttonsList };
-    }
+    }    
 
     public void WriteToJson(JsonTextWriter writer)
     {
