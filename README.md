@@ -23,10 +23,6 @@ This project aims to significantly optimize the serialization and deserializatio
 ## Important:
 Implemented only those methods and functions that I needed to work on a real project. If you found this repository and are interested in it, then you can always expand this functionality if you wish.
 
-## Supported UpdateTypes:
-- Message
-- CallbackQuery
-
 ### Simple usage example:
 ```
 using FastTelegramBot;
@@ -69,6 +65,10 @@ public class Program
     }
 }
 ```
+
+## Supported UpdateTypes:
+- Message
+- CallbackQuery
 
 ### Available Methods
 
