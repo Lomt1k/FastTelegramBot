@@ -12,4 +12,6 @@ public readonly struct FileUniqueId
     {
         return Id;
     }
+
+    public static implicit operator FileUniqueId(string id) => new(id);
 }

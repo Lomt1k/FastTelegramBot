@@ -18,4 +18,7 @@ public struct ChatId
     {
         return Id?.ToString() ?? Username?.ToString() ?? string.Empty;
     }
+
+    public static implicit operator ChatId(long id) => new(id);
+    public static implicit operator ChatId(string username) => new(username);
 }

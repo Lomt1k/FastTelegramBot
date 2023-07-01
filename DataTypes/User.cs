@@ -9,19 +9,19 @@ public class User : IJsonData
     /// <summary>
     /// Unique identifier for this user or bot
     /// </summary>
-    public long Id { get; private set; }
+    public long Id { get; set; }
     /// <summary>
     /// User's or bot's first name
     /// </summary>
-    public string FirstName { get; private set; } = string.Empty;
+    public string FirstName { get; set; } = string.Empty;
     /// <summary>
     /// Optional. User's or bot's last name
     /// </summary>
-    public string? LastName { get; private set; }
+    public string? LastName { get; set; }
     /// <summary>
     /// 	Optional. User's or bot's username
     /// </summary>
-    public string? Username { get; private set; }
+    public string? Username { get; set; }
 
     public override string ToString()
     {

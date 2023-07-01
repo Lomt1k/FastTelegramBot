@@ -47,4 +47,6 @@ public class ReplyKeyboardButton : IKeyboardButton
         return new ReplyKeyboardButton(text, requestLocation: true);
     }
 
+    public static implicit operator ReplyKeyboardButton(string text) => new(text);
+
 }

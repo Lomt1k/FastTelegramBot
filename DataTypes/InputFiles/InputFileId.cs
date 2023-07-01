@@ -31,4 +31,6 @@ public class InputFileId : InputFile
     {
         content.Add(new StringContent(Id.ToString()), propertyName);
     }
+
+    public static implicit operator InputFileId(string fileId) => new(fileId);
 }

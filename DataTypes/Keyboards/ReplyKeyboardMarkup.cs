@@ -77,4 +77,6 @@ public class ReplyKeyboardMarkup : IKeyboardMarkup
 
         writer.WriteEndObject();
     }
+
+    public static implicit operator ReplyKeyboardMarkup(string text) => new(text);
 }
