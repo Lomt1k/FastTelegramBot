@@ -4,10 +4,10 @@ namespace FastTelegramBot.DataTypes.Keyboards;
 public class ReplyKeyboardMarkup : IKeyboardMarkup
 {
     public List<List<ReplyKeyboardButton>> Keyboard { get; } = new();
-    public bool IsPersistent { get; }
-    public bool ResizeKeyboard { get; }
-    public bool OneTimeKeyboard { get; }
-    public string? InputFieldPlaceholder { get; }
+    public bool IsPersistent { get; set; }
+    public bool ResizeKeyboard { get; set; }
+    public bool OneTimeKeyboard { get; set; }
+    public string? InputFieldPlaceholder { get; set; }
 
     public ReplyKeyboardMarkup(List<List<ReplyKeyboardButton>> keyboard, bool isPersistent = false, bool resizeKeyboard = false, bool oneTimeKeyboard = false, string? inputFieldPlaceholder = null)
     {
@@ -16,6 +16,16 @@ public class ReplyKeyboardMarkup : IKeyboardMarkup
         ResizeKeyboard = resizeKeyboard;
         OneTimeKeyboard = oneTimeKeyboard;
         InputFieldPlaceholder = inputFieldPlaceholder;
+    }
+
+    public ReplyKeyboardMarkup(params string[] buttons)
+    {
+        var buttonsList = new List<ReplyKeyboardButton>();
+        foreach (var button in buttons)
+        {
+            buttonsList.Add(new ReplyKeyboardButton(button));
+        }
+        Keyboard = new List<List<ReplyKeyboardButton>> { buttonsList };
     }
 
     public void WriteToJson(JsonTextWriter writer)
