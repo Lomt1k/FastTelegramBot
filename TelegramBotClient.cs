@@ -1,6 +1,8 @@
 ﻿using FastTelegramBot.DataTypes;
+using FastTelegramBot.DataTypes.InputFiles;
 using FastTelegramBot.DataTypes.Keyboards;
 using Newtonsoft.Json;
+using System.Globalization;
 using System.Text;
 
 namespace FastTelegramBot;
@@ -348,6 +350,52 @@ public class TelegramBotClient
     public void StartPollingUpdates(Func<List<Update>, Task> handleUpdatesFunc, long offset = 0, int limit = 100, int timeout = 0, UpdateType[]? allowedUpdates = null, CancellationToken cancellationToken = default)
     {
         _ = new UpdateReceiver(this, handleUpdatesFunc, offset, limit, timeout, allowedUpdates, cancellationToken);
+    }
+
+    /// <summary>
+    /// Use this method to send general files. Bots can currently send files of any type of up to 50 MB in size.
+    /// </summary>
+    /// <param name="chatId">Unique identifier for the target chat or username of the target channel</param>
+    /// <param name="document">File to send</param>
+    /// <param name="caption">Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing</param>
+    /// <param name="parseMode">Mode for parsing entities in the document caption</param>
+    /// <param name="disableNotification">Sends the message silently. Users will receive a notification with no sound.</param>
+    /// <param name="keyboardMarkup">Object for an inline keyboard markup or reply keyboard markup</param>
+    /// <returns>Id of the sent message</returns>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
+    public async Task<MessageId> SendDocumentAsync(ChatId chatId, InputFile document, string? caption = null, ParseMode parseMode = ParseMode.HTML, bool disableNotification = false, IKeyboardMarkup? keyboardMarkup = null, CancellationToken cancellationToken = default)
+    {
+        var boundary = $"{Guid.NewGuid()}{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}";
+        var multipartContent = new MultipartFormDataContent(boundary)
+        {
+            { new StringContent(chatId.ToString()), "chat_id" }
+        };
+        document.AddToMultipartContent(multipartContent, "document");
+
+        if (caption is not null)
+        {
+            multipartContent.Add(new StringContent(caption.ToString()), "caption");
+            multipartContent.Add(new StringContent(parseMode.ToString()), "parse_mode");
+        }
+        if (disableNotification)
+        {
+            multipartContent.Add(new StringContent(disableNotification.ToString()), "disable_notification");
+        }
+        if (keyboardMarkup is not null)
+        {
+            var sb = new StringBuilder();
+            var jsonWriter = new JsonTextWriter(new StringWriter(sb));
+            keyboardMarkup.WriteToJson(jsonWriter);
+            var jsonMarkup = sb.ToString().Replace("\"reply_markup\":", string.Empty);
+            multipartContent.Add(new StringContent(jsonMarkup), "reply_markup");
+        }
+
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "sendDocument", multipartContent, cancellationToken).ConfigureAwait(false);
+        var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var messageId = responseStream.ReadResult<MessageId>();
+        return messageId;
     }
 
 
