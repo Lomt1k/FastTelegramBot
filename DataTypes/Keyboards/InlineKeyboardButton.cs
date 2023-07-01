@@ -3,9 +3,9 @@
 namespace FastTelegramBot.DataTypes.Keyboards;
 public class InlineKeyboardButton : IKeyboardButton
 {
-    public string Text { get; } = string.Empty;
-    public string? Url { get; }
-    public string? CallbackData { get; }
+    public string Text { get; set; } = string.Empty;
+    public string? Url { get; set; }
+    public string? CallbackData { get; set; }
 
     public InlineKeyboardButton(string text, string? url = null, string? callbackData = null)
     {

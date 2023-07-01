@@ -3,7 +3,7 @@
 namespace FastTelegramBot.DataTypes.Keyboards;
 public class ReplyKeyboardMarkup : IKeyboardMarkup
 {
-    public List<List<ReplyKeyboardButton>> Keyboard { get; } = new();
+    public List<List<ReplyKeyboardButton>> Keyboard { get; set; } = new();
     public bool IsPersistent { get; set; }
     public bool ResizeKeyboard { get; set; }
     public bool OneTimeKeyboard { get; set; }

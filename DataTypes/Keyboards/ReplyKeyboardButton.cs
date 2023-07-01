@@ -3,9 +3,9 @@
 namespace FastTelegramBot.DataTypes.Keyboards;
 public class ReplyKeyboardButton : IKeyboardButton
 {
-    public string Text { get; } = string.Empty;
-    public bool RequestContact { get; }
-    public bool RequestLocation { get; }
+    public string Text { get; set; } = string.Empty;
+    public bool RequestContact { get; set; }
+    public bool RequestLocation { get; set; }
 
     public ReplyKeyboardButton(string text)
     {
