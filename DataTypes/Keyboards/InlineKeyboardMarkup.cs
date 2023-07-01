@@ -10,6 +10,12 @@ public class InlineKeyboardMarkup : IKeyboardMarkup
         InlineKeyboard = inlineKeyboard;
     }
 
+    public InlineKeyboardMarkup(List<InlineKeyboardButton> inlineKeyboard)
+        : this(new List<List<InlineKeyboardButton>>() { inlineKeyboard }) { }
+
+    public InlineKeyboardMarkup(IEnumerable<InlineKeyboardButton> inlineKeyboard)
+        : this(new List<List<InlineKeyboardButton>> { inlineKeyboard.ToList() }) { }
+
     public void WriteToJson(JsonTextWriter writer)
     {
         writer.WritePropertyName("reply_markup");
