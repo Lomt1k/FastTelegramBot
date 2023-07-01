@@ -18,6 +18,9 @@ public class ReplyKeyboardMarkup : IKeyboardMarkup
         InputFieldPlaceholder = inputFieldPlaceholder;
     }
 
+    public ReplyKeyboardMarkup(ReplyKeyboardButton[] keyboard, bool isPersistent = false, bool resizeKeyboard = false, bool oneTimeKeyboard = false, string? inputFieldPlaceholder = null)
+        : this (new ReplyKeyboardButton[][] { keyboard }, isPersistent, resizeKeyboard, oneTimeKeyboard, inputFieldPlaceholder ) { }
+
     public ReplyKeyboardMarkup(params string[] buttons)
     {
         var buttonsArray = new ReplyKeyboardButton[buttons.Length];
