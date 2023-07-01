@@ -13,11 +13,13 @@ public class TelegramBotClient
 
     public HttpClient HttpClient { get; } = new();
     public string BaseRequestUrl { get; }
+    public string FileRequestUrl { get; }
     public string Token { get; }
 
     public TelegramBotClient(string token)
     {
         BaseRequestUrl = $"{apiUrl}bot{token}/";
+        FileRequestUrl = $"{apiUrl}file/bot{token}/";
         Token = token;
     }
 
@@ -421,15 +423,13 @@ public class TelegramBotClient
     /// <exception cref="TaskCanceledException"/>
     public async Task DownloadFileAsync(string filePath, Stream destination, CancellationToken cancellationToken = default)
     {
-        var httpResponse = await HttpClient.GetAsync(BaseRequestUrl + filePath, cancellationToken).ConfigureAwait(false);
+        var httpResponse = await HttpClient.GetAsync(FileRequestUrl + filePath, cancellationToken).ConfigureAwait(false);
         if (httpResponse.IsSuccessStatusCode)
         {
             await httpResponse.Content.CopyToAsync(destination, cancellationToken).ConfigureAwait(false);
             return;
         }
-
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
-        // exception will be throwed
         responseStream.EnsureOkResult();
     }
 

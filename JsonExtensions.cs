@@ -24,15 +24,10 @@ public static class JsonExtensions
                 var key = jsonReader.Value.ToString();
                 switch (key)
                 {
-                    case "ok":
-                        bool isOk = jsonReader.ReadAsBoolean() ?? false;
-                        if (isOk)
-                        {
-                            var result = new T();
-                            result.ReadFromJson(jsonReader);
-                            return result;
-                        }
-                        break;
+                    case "result":
+                        var result = new T();
+                        result.ReadFromJson(jsonReader);
+                        return result;
                     case "description":
                         description = jsonReader.ReadAsString();
                         break;
