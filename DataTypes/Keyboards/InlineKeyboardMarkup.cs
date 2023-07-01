@@ -3,9 +3,9 @@
 namespace FastTelegramBot.DataTypes.Keyboards;
 public class InlineKeyboardMarkup : IKeyboardMarkup
 {
-    public InlineKeyboardButton[][] InlineKeyboard { get; } = Array.Empty<InlineKeyboardButton[]>();
+    public List<List<InlineKeyboardButton>> InlineKeyboard { get; } = new();
 
-    public InlineKeyboardMarkup(InlineKeyboardButton[][] inlineKeyboard)
+    public InlineKeyboardMarkup(List<List<InlineKeyboardButton>> inlineKeyboard)
     {
         InlineKeyboard = inlineKeyboard;
     }
