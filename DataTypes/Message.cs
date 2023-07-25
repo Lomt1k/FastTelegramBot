@@ -9,8 +9,10 @@ public class Message : IJsonData
     public User From { get; private set; } = new();
     public DateTime Date { get; private set; }
     public string? Text { get; private set; } = string.Empty;
+    public string? Caption { get; private set; } = string.Empty;
     public Document? Document { get; private set; }
     public Sticker? Sticker { get; private set; }
+    public PhotoSize[] Photo { get; private set; } = Array.Empty<PhotoSize>();
 
     public void ReadFromJson(JsonTextReader reader)
     {
@@ -38,6 +40,9 @@ public class Message : IJsonData
                     case "text":
                         Text = reader.ReadAsString();
                         break;
+                    case "caption":
+                        Caption = reader.ReadAsString();
+                        break;
                     case "document":
                         Document = new Document();
                         Document.ReadFromJson(reader);
@@ -45,6 +50,9 @@ public class Message : IJsonData
                     case "sticker":
                         Sticker = new Sticker();
                         Sticker.ReadFromJson(reader);
+                        break;
+                    case "photo":
+                        Photo = reader.ReadObjectArray<PhotoSize>();
                         break;
 
                     default:

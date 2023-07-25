@@ -78,4 +78,20 @@ public static class JsonExtensions
         throw new TelegramBotException(errorCode, description);
     }
 
+    public static T[] ReadObjectArray<T>(this JsonTextReader reader) where T : IJsonData, new()
+    {
+        var list = new List<T>();
+        while (reader.Read())
+        {
+            if (reader.TokenType == JsonToken.EndArray)
+            {
+                break;
+            }
+            var nextObject = new T();
+            nextObject.ReadFromJson(reader);
+            list.Add(nextObject);
+        }
+        return list.ToArray();
+    }
+
 }

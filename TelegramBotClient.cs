@@ -95,8 +95,7 @@ public class TelegramBotClient
     /// <param name="text">Text of the message to be sent, 1-4096 characters after entities parsing</param>
     /// <param name="parseMode">Mode for parsing entities in the message text</param>
     /// <param name="disableWebPagePreview">Disables link previews for links in this message</param>
-    /// <param name="disableNotification">Sends the message silently. Users will receive a notification with no sound</param>
-    /// <param name="keyboardMarkup">Object for an inline keyboard markup or reply keyboard markup</param>
+    /// <param name="inlineKeyboardMarkup">Object for an inline keyboard markup or reply keyboard markup</param>
     /// <exception cref="TelegramBotException"/>
     /// <exception cref="HttpRequestException"/>
     /// <exception cref="TaskCanceledException"/>
@@ -128,6 +127,44 @@ public class TelegramBotClient
         }
         var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
         var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "editMessageText", jsonContent, cancellationToken).ConfigureAwait(false);
+        var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        responseStream.EnsureOkResult();
+    }
+
+    /// <summary>
+    /// Use this method to edit captions of messages
+    /// </summary>
+    /// <param name="chatId">Unique identifier for the target chat or username of the target channel</param>
+    /// <param name="messageId">Identifier of the message to edit</param>
+    /// <param name="caption">New caption of the message, 0-1024 characters after entities parsing</param>
+    /// <param name="parseMode">Mode for parsing entities in the message text</param>
+    /// <param name="inlineKeyboardMarkup">Object for an inline keyboard markup or reply keyboard markup</param>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
+    public async Task EditMessageCaptionAsync(ChatId chatId, MessageId messageId, string caption, ParseMode parseMode = ParseMode.HTML, InlineKeyboardMarkup? inlineKeyboardMarkup = null, CancellationToken cancellationToken = default)
+    {
+        var sb = new StringBuilder();
+        using (var sw = new StringWriter(sb))
+        {
+            using var jsonWriter = new JsonTextWriter(sw);
+            jsonWriter.WriteStartObject();
+            jsonWriter.WritePropertyName("chat_id");
+            jsonWriter.WriteValue(chatId.ToString());
+            jsonWriter.WritePropertyName("message_id");
+            jsonWriter.WriteValue(messageId.ToString());
+            jsonWriter.WritePropertyName("caption");
+            jsonWriter.WriteValue(caption);
+            jsonWriter.WritePropertyName("parse_mode");
+            jsonWriter.WriteValue(parseMode.ToString());
+            if (inlineKeyboardMarkup is not null)
+            {
+                inlineKeyboardMarkup.WriteToJson(jsonWriter);
+            }
+            jsonWriter.WriteEndObject();
+        }
+        var jsonContent = new StringContent(sb.ToString(), Encoding.UTF8, "application/json");
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "editMessageCaption", jsonContent, cancellationToken).ConfigureAwait(false);
         var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
         responseStream.EnsureOkResult();
     }
@@ -549,6 +586,52 @@ public class TelegramBotClient
         var update = new Update();
         update.ReadFromJson(jsonReader);
         return update;
+    }
+
+    /// <summary>
+    /// Use this method to send photos
+    /// </summary>
+    /// <param name="chatId">Unique identifier for the target chat or username of the target channel</param>
+    /// <param name="photo">Photo to send</param>
+    /// <param name="caption">Document caption (may also be used when resending documents by file_id), 0-1024 characters after entities parsing</param>
+    /// <param name="parseMode">Mode for parsing entities in the document caption</param>
+    /// <param name="disableNotification">Sends the message silently. Users will receive a notification with no sound.</param>
+    /// <param name="keyboardMarkup">Object for an inline keyboard markup or reply keyboard markup</param>
+    /// <returns>Id of the sent message</returns>
+    /// <exception cref="TelegramBotException"/>
+    /// <exception cref="HttpRequestException"/>
+    /// <exception cref="TaskCanceledException"/>
+    public async Task<MessageId> SendPhotoAsync(ChatId chatId, InputFile photo, string? caption = null, ParseMode parseMode = ParseMode.HTML, bool disableNotification = false, IKeyboardMarkup? keyboardMarkup = null, CancellationToken cancellationToken = default)
+    {
+        var boundary = $"{Guid.NewGuid()}{DateTime.UtcNow.Ticks.ToString(CultureInfo.InvariantCulture)}";
+        var multipartContent = new MultipartFormDataContent(boundary)
+        {
+            { new StringContent(chatId.ToString()), "chat_id" }
+        };
+        photo.AddToMultipartContent(multipartContent, "photo");
+
+        if (caption is not null)
+        {
+            multipartContent.Add(new StringContent(caption.ToString()), "caption");
+            multipartContent.Add(new StringContent(parseMode.ToString()), "parse_mode");
+        }
+        if (disableNotification)
+        {
+            multipartContent.Add(new StringContent(disableNotification.ToString()), "disable_notification");
+        }
+        if (keyboardMarkup is not null)
+        {
+            var sb = new StringBuilder();
+            var jsonWriter = new JsonTextWriter(new StringWriter(sb));
+            keyboardMarkup.WriteToJson(jsonWriter);
+            var jsonMarkup = sb.ToString().Replace("\"reply_markup\":", string.Empty);
+            multipartContent.Add(new StringContent(jsonMarkup), "reply_markup");
+        }
+
+        var httpResponse = await HttpClient.PostAsync(BaseRequestUrl + "sendPhoto", multipartContent, cancellationToken).ConfigureAwait(false);
+        var responseStream = await httpResponse.Content.ReadAsStreamAsync(cancellationToken).ConfigureAwait(false);
+        var messageId = responseStream.ReadResult<MessageId>();
+        return messageId;
     }
 
 }

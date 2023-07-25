@@ -57,27 +57,11 @@ public class StickerSet : IJsonData
                         IsVideo = reader.ReadAsBoolean() ?? false;
                         break;
                     case "stickers":
-                        Stickers = ReadStickersArray(reader);
+                        Stickers = reader.ReadObjectArray<Sticker>();
                         break;
                 }
             }
         }
-    }
-
-    private Sticker[] ReadStickersArray(JsonTextReader reader)
-    {
-        var stickersList = new List<Sticker>();
-        while (reader.Read())
-        {
-            if (reader.TokenType == JsonToken.EndArray)
-            {
-                break;
-            }
-            var nextSticker = new Sticker();
-            nextSticker.ReadFromJson(reader);
-            stickersList.Add(nextSticker);
-        }
-        return stickersList.ToArray();
     }
 
 }
